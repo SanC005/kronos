@@ -1,5 +1,3 @@
-import makeWASocket, { DisconnectReason } from "@whiskeysockets/baileys";
-import { Boom } from "@hapi/boom";
 const makeWAsocket = require("@adiwajshing/baileys").default;
 const {
   DisconnectReason,
@@ -22,7 +20,34 @@ async function chronosBot() {
     auth: state,
     getMessage,
   });
-
+  const getText = message => {
+    try{
+        return message.conversation || message.extendedTextMessage.text
+    }catch{
+      return "";
+    }
+  }
+  const sendMessage = async (jid, content) => {
+    try{
+      const sent = await socket.sendMessage(jid,content);
+      store[sent.key.id] = sent;
+    } catch(err){
+      console.error("send message error: ",err)
+    }
+      
+  }
+  const talk = async (msg) => {
+      const {key,message} = msg;
+      const text = getText(message);
+      const command = 'echo';
+      if(!text.toLowerCase().startsWith(command)){
+        return;
+      } else{
+        console.log("command working...")
+        const reply = text.slice(command.length)
+        sendMessage(key.remoteJid,{ text:reply });
+      }
+  }
   socket.ev.process(async (events) => {
     if (events["connection.update"]) {
       const { connection, lastDisconnect } = events["connection.update"];
@@ -43,7 +68,9 @@ async function chronosBot() {
     if (events["messages.upsert"]) {
       const { messages } = events["messages.upsert"];
       messages.forEach((message) => {
+        if(!message.message) return;
         console.log(message);
+        talk(message);
       });
     }
   });
