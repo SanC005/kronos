@@ -20,34 +20,66 @@ async function chronosBot() {
     auth: state,
     getMessage,
   });
-  const getText = message => {
-    try{
-        return message.conversation || message.extendedTextMessage.text
-    }catch{
+  const getText = (message) => {
+    try {
+      return message.conversation || message.extendedTextMessage.text;
+    } catch {
       return "";
     }
-  }
-  const sendMessage = async (jid, content) => {
-    try{
-      const sent = await socket.sendMessage(jid,content);
+  };
+  const sendMessage = async (jid, content, ...args) => {
+    try {
+      const sent = await socket.sendMessage(jid, content, ...args);
       store[sent.key.id] = sent;
-    } catch(err){
-      console.error("send message error: ",err)
+    } catch (err) {
+      console.error("send message faced error: ", err);
     }
-      
-  }
+  };
   const talk = async (msg) => {
-      const {key,message} = msg;
-      const text = getText(message);
-      const command = 'echo';
-      if(!text.toLowerCase().startsWith(command)){
-        return;
-      } else{
-        console.log("command working...")
-        const reply = text.slice(command.length)
-        sendMessage(key.remoteJid,{ text:reply });
-      }
-  }
+    const { key, message } = msg;
+    const text = getText(message);
+    let command = "echo";
+    let regex = new RegExp(`^(?:!${command}|@${command}) (.+)`);
+    if (!regex.test(text)) {
+      return;
+    } else {
+      const reply = text.slice(command.length + 1);
+      sendMessage(key.remoteJid, { text: reply }, { quoted: msg });
+    }
+  };
+  const schedule = async (msg) => {
+    const { key, message } = msg;
+    const text = getText(message);
+    const command = "!schedule";
+    if (!text.toLowerCase().startsWith(command)) {
+      return;
+    } else {
+      const reply = "scheduled message";
+      sendMessage(key.remoteJid, { text: reply }, { quoted: msg });
+    }
+  };
+  const tagAll = async (msg) => {
+    const { key, message } = msg;
+    const text = getText(message);
+    const command = "@all";
+    if (!text.toLowerCase().includes(command)) {
+      return;
+    } else {
+      const group = await socket.groupMetadata(key.remoteJid);
+      const members = group.participants;
+      const mentions = [];
+      const items = [];
+      members.forEach(({ id, admin }) => {
+        mentions.push(id);
+        items.push(`@${id.slice(0, 12)}`);
+      });
+      sendMessage(
+        key.remoteJid,
+        { text: items.join(" "), mentions },
+        { quoted: msg }
+      );
+    }
+  };
   socket.ev.process(async (events) => {
     if (events["connection.update"]) {
       const { connection, lastDisconnect } = events["connection.update"];
@@ -67,10 +99,12 @@ async function chronosBot() {
     }
     if (events["messages.upsert"]) {
       const { messages } = events["messages.upsert"];
-      messages.forEach((message) => {
-        if(!message.message) return;
-        console.log(message);
-        talk(message);
+      messages.forEach((msg) => {
+        if (!msg.message) return;
+        //console.log(message);
+        talk(msg);
+        tagAll(msg);
+        schedule(msg);
       });
     }
   });
