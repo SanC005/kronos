@@ -1,5 +1,5 @@
 const makeWAsocket = require("@adiwajshing/baileys").default;
-const job = require('./cron.js').job
+// const job = require('./cron.js').job
 const {
   DisconnectReason,
   useMultiFileAuthState,
@@ -12,10 +12,11 @@ const getMessage = (key) => {
     return store[id].message;
   }
 };
-const helpText = `Hi, I am Chronos \n You can use the following commands with '!' or '@' prefix: \n 
-1) echo - to have chronos reply back! \n 
-2) help - to let chronos help you! \n 
-3) all - to tag everyone in group \n`
+const helpText = `Hi, I am Kronos! 😄 \nYou can use the following commands: \n 
+1) !echo - have kronos reply back  
+2) !help - to let kronos help you  
+3) @all - to tag everyone in group
+More coming soon...`
 async function chronosBot() {
   const { state, saveCreds } = await useMultiFileAuthState("auth");
   const socket = makeWAsocket({
@@ -36,26 +37,25 @@ async function chronosBot() {
       const sent = await socket.sendMessage(jid, content, ...args);
       store[sent.key.id] = sent;
     } catch (err) {
-      console.error("send message faced error: ", err);
+      console.error("\n send message faced error: ", err);
     }
   };
   const help = async (msg) => {
     const { key, message } = msg;
     const text = getText(message);
-    let command = "help";
-    let regex = new RegExp(`^(?:!${command}|@${command}) (.+)`);
-    if (!regex.test(text)) {
+    let command = "!help";
+    if (!text.toLowerCase().startsWith(command)) {
       return;
     } else {
-      sendMessage(key.remoteJid, { text: helpText }, { quoted: msg });
+      sendMessage(key.remoteJid, { text: helpText });
     }
   };
   const talk = async (msg) => {
     const { key, message } = msg;
     const text = getText(message);
-    let command = "echo";
-    let regex = new RegExp(`^(?:!${command}|@${command}) (.+)`);
-    if (!regex.test(text)) {
+    let command = "!echo";
+    //let regex = new RegExp(`^(?:!${command}|@${command}) (.+)`);
+    if (!text.toLowerCase().startsWith(command)) {
       return;
     } else {
       const reply = text.slice(command.length + 1);
@@ -84,7 +84,7 @@ async function chronosBot() {
       const members = group.participants;
       const mentions = [];
       const items = [];
-      members.forEach(({ id, admin }) => {
+      members.forEach(({ id }) => {
         mentions.push(id);
         items.push(`@${id.slice(0, 12)}`);
       });
@@ -120,10 +120,11 @@ async function chronosBot() {
         talk(msg);
         tagAll(msg);
         schedule(msg);
+        help(msg);
       });
     }
   });
 }
 
 chronosBot();
-job.start()
+// job.start()
