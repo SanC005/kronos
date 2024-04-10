@@ -12,7 +12,10 @@ const getMessage = (key) => {
     return store[id].message;
   }
 };
-
+const helpText = `Hi, I am Chronos \n You can use the following commands with '!' or '@' prefix: \n 
+1) echo - to have chronos reply back! \n 
+2) help - to let chronos help you! \n 
+3) all - to tag everyone in group \n`
 async function chronosBot() {
   const { state, saveCreds } = await useMultiFileAuthState("auth");
   const socket = makeWAsocket({
@@ -34,6 +37,17 @@ async function chronosBot() {
       store[sent.key.id] = sent;
     } catch (err) {
       console.error("send message faced error: ", err);
+    }
+  };
+  const help = async (msg) => {
+    const { key, message } = msg;
+    const text = getText(message);
+    let command = "help";
+    let regex = new RegExp(`^(?:!${command}|@${command}) (.+)`);
+    if (!regex.test(text)) {
+      return;
+    } else {
+      sendMessage(key.remoteJid, { text: helpText }, { quoted: msg });
     }
   };
   const talk = async (msg) => {
