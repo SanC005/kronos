@@ -1,5 +1,5 @@
 const makeWAsocket = require("@adiwajshing/baileys").default;
-// const job = require('./cron.js').job
+const job = require('./cron.js').job
 const {
   DisconnectReason,
   useMultiFileAuthState,
@@ -15,7 +15,7 @@ const getMessage = (key) => {
 const helpText = `Hi, I am Kronos! 😄 \nYou can use the following commands: \n 
 1) !echo - have kronos reply back  
 2) !help - to let kronos help you  
-3) @all - to tag everyone in group
+3) !all - to tag everyone in group
 More coming soon...`
 async function chronosBot() {
   const { state, saveCreds } = await useMultiFileAuthState("auth");
@@ -76,7 +76,7 @@ async function chronosBot() {
   const tagAll = async (msg) => {
     const { key, message } = msg;
     const text = getText(message);
-    const command = "@all";
+    const command = "!all";
     if (!text.toLowerCase().includes(command)) {
       return;
     } else {
@@ -127,4 +127,4 @@ async function chronosBot() {
 }
 
 chronosBot();
-// job.start()
+job.start()

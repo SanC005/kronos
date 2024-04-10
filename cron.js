@@ -1,4 +1,4 @@
-//Cron job to hit endpoint every 14 sec to keep backend alive always
+//Cron job to hit endpoint every 14 minute to keep backend alive always
 const cron = require("cron");
 const https = require("https");
 const backendUrl = "https://chronos-server-kpnn.onrender.com";
