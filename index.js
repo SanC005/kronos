@@ -1,4 +1,5 @@
 const makeWAsocket = require("@adiwajshing/baileys").default;
+const job = require('./cron.js').job
 const {
   DisconnectReason,
   useMultiFileAuthState,
@@ -111,3 +112,4 @@ async function chronosBot() {
 }
 
 chronosBot();
+job.start()

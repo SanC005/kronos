@@ -11,6 +11,8 @@
   "description": "",
   "dependencies": {
     "@adiwajshing/baileys": "^5.0.0",
+    "cron": "^3.1.7",
+    "https": "^1.0.0",
     "nodemon": "^3.1.0",
     "qrcode-terminal": "^0.12.0"
   }
