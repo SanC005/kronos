@@ -1,5 +1,5 @@
 const makeWAsocket = require("@adiwajshing/baileys").default;
-const job = require("./cron.js").job;
+//const job = require("./cron.js").job;
 const {
   DisconnectReason,
   useMultiFileAuthState,
@@ -28,11 +28,14 @@ async function chronosBot() {
       return "";
     }
   };
-  const helpText = `Hi, I am Kronos! 😄 \nYou can use the following commands with prefix '!' or '@': \n 
+  const helpText = `Hi, I am Kronos! 😄 \nYou can use the following commands with prefix '!': \n 
   1) echo - have kronos reply back  
   2) help - to let kronos help you  
   3) all - to tag everyone in group
+  4) welcome - to welcome the new joiners
   More coming soon...`;
+  const welcomeText = `Welcome to the group! 😄
+  Run !help to know more about kronos`;
   const sendMessage = async (jid, content, ...args) => {
     try {
       const sent = await socket.sendMessage(jid, content, ...args);
@@ -45,6 +48,16 @@ async function chronosBot() {
     const { key, message } = msg;
     const text = getText(message);
     let command = "!help";
+    if (!text.toLowerCase().startsWith(command)) {
+      return;
+    } else {
+      sendMessage(key.remoteJid, { text: welcomeText });
+    }
+  };
+  const welcome = async (msg) => {
+    const { key, message } = msg;
+    const text = getText(message);
+    let command = "!welcome";
     if (!text.toLowerCase().startsWith(command)) {
       return;
     } else {
@@ -122,6 +135,7 @@ async function chronosBot() {
         tagAll(msg);
         schedule(msg);
         help(msg);
+        welcome(msg)
       });
     }
   });
