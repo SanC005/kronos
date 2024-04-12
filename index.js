@@ -29,13 +29,13 @@ async function chronosBot() {
     }
   };
   const helpText = `Hi, I am Kronos! 😄 \nYou can use the following commands with prefix '!': \n 
-  1) echo - have kronos reply back  
-  2) help - to let kronos help you  
-  3) all - to tag everyone in group
-  4) welcome - to welcome the new joiners
-  More coming soon...`;
+1) echo - have kronos reply back  
+2) help - to let kronos help you  
+3) all - to tag everyone in group
+4) welcome - to welcome the new joiners
+More coming soon...`;
   const welcomeText = `Welcome to the group! 😄
-  Run !help to know more about kronos`;
+Run !help to know more about kronos`;
   const sendMessage = async (jid, content, ...args) => {
     try {
       const sent = await socket.sendMessage(jid, content, ...args);
@@ -51,7 +51,7 @@ async function chronosBot() {
     if (!text.toLowerCase().startsWith(command)) {
       return;
     } else {
-      sendMessage(key.remoteJid, { text: welcomeText });
+      sendMessage(key.remoteJid, { text: helpText });
     }
   };
   const welcome = async (msg) => {
@@ -61,7 +61,7 @@ async function chronosBot() {
     if (!text.toLowerCase().startsWith(command)) {
       return;
     } else {
-      sendMessage(key.remoteJid, { text: helpText });
+      sendMessage(key.remoteJid, { text: welcomeText });
     }
   };
   const talk = async (msg) => {
@@ -90,7 +90,7 @@ async function chronosBot() {
   const tagAll = async (msg) => {
     const { key, message } = msg;
     const text = getText(message);
-    const command = "@all";
+    const command = "!all";
     if (!text.toLowerCase().includes(command)) {
       return;
     } else {
