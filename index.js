@@ -13,7 +13,7 @@ const getMessage = (key) => {
   }
 };
 
-async function chronosBot() {
+async function kronosBot() {
   const { state, saveCreds } = await useMultiFileAuthState("auth");
   const socket = makeWAsocket({
     version: [2, 2323, 4],
@@ -117,7 +117,7 @@ Run !help to know more about kronos`;
           lastDisconnect?.error?.output?.StatusCode !=
           DisconnectReason.loggedOut
         ) {
-          chronosBot();
+          kronosBot();
         } else {
           console.log("Disconnected becuase user has logged out");
         }
@@ -141,7 +141,7 @@ Run !help to know more about kronos`;
   });
 }
 
-chronosBot();
+kronosBot();
 const http = require('http');
 const express = require('express');
 const app = express();
